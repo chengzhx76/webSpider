@@ -2,7 +2,7 @@ package com.cheng.spider.core.downloader;
 
 import com.cheng.spider.core.Page;
 import com.cheng.spider.core.Request;
-import com.cheng.spider.core.Spider;
+import com.cheng.spider.core.Task;
 
 /**
  * Desc: 下载器
@@ -13,8 +13,8 @@ public interface Downloader {
     /**
      * 下载
      * @param request
-     * @param spider
+     * @param task
      * @return
      */
-    Page download(Request request, Spider spider);
+    Page download(Request request, Task task);
 }

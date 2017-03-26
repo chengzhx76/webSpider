@@ -20,6 +20,7 @@
     <slf4j.version>1.7.7</slf4j.version>
     <fastjson.version>1.1.41</fastjson.version>
     <guava.version>19.0</guava.version>
+    <httpClient.version>4.2.4</httpClient.version>
 
     <source.version>2.4</source.version>
     <compiler.version>3.1</compiler.version>
@@ -32,6 +33,11 @@
         <artifactId>junit</artifactId>
         <version>4.10</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${httpClient.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

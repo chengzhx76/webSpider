@@ -3,6 +3,7 @@ package com.cheng.spider.core.downloader;
 import com.cheng.spider.core.Page;
 import com.cheng.spider.core.Request;
 import com.cheng.spider.core.Spider;
+import com.cheng.spider.core.Task;
 
 /**
  * Desc:
@@ -11,7 +12,7 @@ import com.cheng.spider.core.Spider;
  */
 public class HttpClientDownloader implements Downloader {
     @Override
-    public Page download(Request request, Spider spider) {
+    public Page download(Request request, Task task) {
         return null;
     }
 }
