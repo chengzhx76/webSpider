@@ -4,7 +4,8 @@ import com.cheng.spider.core.Page;
 import com.cheng.spider.core.Request;
 import com.cheng.spider.core.Site;
 import com.cheng.spider.core.Task;
-import com.google.common.io.Files;
+import com.cheng.spider.core.util.UrlUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -52,7 +53,7 @@ public class HttpClientDownloader implements Downloader {
             if (site.getAcceptStatCode().contains(statusCode)) {
                 if (charset == null) {
                     String value = httpResponse.getEntity().getContentType().getValue();
-                    //charset = UrlUtils.getCharset(value);
+                    charset = UrlUtils.getCharset(value);
                 }
 
                 String content = IOUtils.toString(httpResponse.getEntity().getContent(), charset);

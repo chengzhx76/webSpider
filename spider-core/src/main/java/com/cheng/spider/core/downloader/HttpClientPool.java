@@ -1,7 +1,6 @@
 package com.cheng.spider.core.downloader;
 
 import com.cheng.spider.core.Site;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.params.ClientPNames;
@@ -13,7 +12,10 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.params.*;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
 
 import java.util.Map;
 
@@ -46,10 +48,10 @@ public class HttpClientPool {
         params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 1000);
         params.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2000);
 
-        HttpProtocolParamBean paramBean = new HttpProtocolParamBean(params);
-        paramBean.setVersion(HttpVersion.HTTP_1_1);
-        paramBean.setContentCharset("UTF-8");
-        paramBean.setUseExpectContinue(false);
+        //HttpProtocolParamBean paramBean = new HttpProtocolParamBean(params);
+        //paramBean.setVersion(HttpVersion.HTTP_1_1);
+        //paramBean.setContentCharset("UTF-8");
+        //paramBean.setUseExpectContinue(false);
 
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));

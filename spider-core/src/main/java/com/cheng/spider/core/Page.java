@@ -20,6 +20,8 @@ public class Page {
 
     private String html;
 
+    private String url;
+
     /**
      * 保存抽取的结果
      * @param key
@@ -73,6 +75,14 @@ public class Page {
 
     public void setHtml(String html) {
         this.html = html;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     private boolean checkLegalUrl(String addr) {
