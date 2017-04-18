@@ -20,18 +20,20 @@ public class RegexSelector implements Selector {
 
     private Pattern regex;
 
-    public RegexSelector(){}
+    private int group = 1;
 
-    public RegexSelector(String regexStr) {
+    public RegexSelector(String regexStr, int group) {
         if (Strings.isNullOrEmpty(regexStr)) {
             throw new IllegalArgumentException("正则表达式不能为空");
         }
-        if (!StringUtils.contains(regexStr, "(") || !StringUtils.contains(regexStr, ")")) {
-            throw new IllegalArgumentException("正则表达式必须用“()”包裹");
+        if (group <= 0) {
+            throw new IllegalArgumentException("group 必需大于或等于0");
         }
         if (!StringUtils.contains(regexStr, "(") && !StringUtils.contains(regexStr, ")")) {
-            this.regexStr = "(" + regexStr + ")";
+            regexStr = "(" + regexStr + ")";
         }
+        this.regexStr = regexStr;
+        this.group = group;
         try {
             regex = Pattern.compile(regexStr, /*Pattern.DOTALL|*/Pattern.CASE_INSENSITIVE);
         }catch (PatternSyntaxException e) {
@@ -39,9 +41,13 @@ public class RegexSelector implements Selector {
         }
     }
 
+    public RegexSelector(String regexStr) {
+        this(regexStr, 1);
+    }
+
     @Override
     public String select(String text) {
-        return selectGroup(text).get(1);
+        return selectGroup(text).get(group);
     }
 
     @Override
@@ -49,7 +55,7 @@ public class RegexSelector implements Selector {
         List<String> results = new ArrayList<>();
         List<RegexResult> regexResults = selectGroupList(text);
         for (RegexResult regexResult : regexResults) {
-            results.add(regexResult.get(1));
+            results.add(regexResult.get(group));
         }
         return results;
     }

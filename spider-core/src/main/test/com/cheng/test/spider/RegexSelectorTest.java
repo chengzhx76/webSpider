@@ -14,10 +14,14 @@ public class RegexSelectorTest {
 
     @Test
     public void test01() {
-        String text = "Hello World!";
-        String regex = "W(or)(ld!)";
+        //String text = "1458727543----WQDPVCTBUW-1441794418CTBUW-1441794419";
+        //String regex = "[1-9][0-9]{4,}";
+        //String regex = "([1-9][0-9]{4,})";
+        String text = "http://blog.sina.com.cn/s/blog_4701280b0102egl0.html";
+        String regex = "http://blog.sina.com.cn/(s)/blog_(\\w+)";
 
-        RegexSelector selector = new RegexSelector(regex);
+        RegexSelector selector = new RegexSelector(regex, 1);
+        //RegexSelector selector = new RegexSelector(regex, 2);
         String result = selector.select(text);
         List<String> results = selector.selectList(text);
 
