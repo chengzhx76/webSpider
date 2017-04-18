@@ -1,4 +1,4 @@
-package com.cheng.spider;
+package com.cheng.test.spider;
 
 import org.junit.Test;
 

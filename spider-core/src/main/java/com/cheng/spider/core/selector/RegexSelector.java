@@ -3,6 +3,7 @@ package com.cheng.spider.core.selector;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +20,8 @@ public class RegexSelector implements Selector {
 
     private Pattern regex;
 
+    public RegexSelector(){}
+
     public RegexSelector(String regexStr) {
         if (Strings.isNullOrEmpty(regexStr)) {
             throw new IllegalArgumentException("正则表达式不能为空");
@@ -31,22 +34,27 @@ public class RegexSelector implements Selector {
         }
         try {
             regex = Pattern.compile(regexStr, /*Pattern.DOTALL|*/Pattern.CASE_INSENSITIVE);
-        }catch (PatternSyntaxException) {
+        }catch (PatternSyntaxException e) {
             throw new IllegalArgumentException("不合法的正则表达式");
         }
     }
 
     @Override
     public String select(String text) {
-        return null;
+        return selectGroup(text).get(1);
     }
 
     @Override
     public List<String> selectList(String text) {
-        return null;
+        List<String> results = new ArrayList<>();
+        List<RegexResult> regexResults = selectGroupList(text);
+        for (RegexResult regexResult : regexResults) {
+            results.add(regexResult.get(1));
+        }
+        return results;
     }
 
-    public RegexResult selectGroup(String text) {
+    private RegexResult selectGroup(String text) {
         Matcher matcher = regex.matcher(text);
         if (matcher.find()) {
             String[] groups = new String[matcher.groupCount() + 1];
@@ -56,5 +64,24 @@ public class RegexSelector implements Selector {
             return new RegexResult(groups);
         }
         return RegexResult.EMPTY_RESULT;
+    }
+
+    private List<RegexResult> selectGroupList(String text) {
+        List<RegexResult> results = new ArrayList<>();
+        Matcher matcher = regex.matcher(text);
+
+        while (matcher.find()) {
+            String[] groups = new String[matcher.groupCount() + 1];
+            for (int i = 0; i < groups.length; i++) {
+                groups[i] = matcher.group(i);
+            }
+            results.add(new RegexResult(groups));
+        }
+        return results;
+    }
+
+    @Override
+    public String toString() {
+        return regexStr;
     }
 }

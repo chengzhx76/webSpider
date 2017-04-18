@@ -11,7 +11,7 @@ public class RegexResult {
 
     public static final RegexResult EMPTY_RESULT = new RegexResult();
 
-    public RegexResult(){};
+    public RegexResult(){}
 
     public RegexResult(String[] groups) {
         this.groups = groups;

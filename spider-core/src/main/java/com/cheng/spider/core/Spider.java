@@ -1,11 +1,11 @@
 package com.cheng.spider.core;
 
+import com.cheng.spider.core.pipeline.Pipeline;
+import com.cheng.spider.core.scheduler.Scheduler;
 import com.cheng.spider.core.downloader.Downloader;
 import com.cheng.spider.core.downloader.HttpClientDownloader;
-import com.cheng.spider.core.pipeline.Pipeline;
 import com.cheng.spider.core.processor.PageProcessor;
 import com.cheng.spider.core.scheduler.QuenueScheduler;
-import com.cheng.spider.core.scheduler.Scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
