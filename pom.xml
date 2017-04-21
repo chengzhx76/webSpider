@@ -19,6 +19,7 @@
     <log4j.version>1.2.17</log4j.version>
     <slf4j.version>1.7.7</slf4j.version>
     <fastjson.version>1.1.41</fastjson.version>
+    <htmlcleaner.version>2.4</htmlcleaner.version>
     <guava.version>19.0</guava.version>
     <httpClient.version>4.2.4</httpClient.version>
 
@@ -58,6 +59,11 @@
         <groupId>com.alibaba</groupId>
         <artifactId>fastjson</artifactId>
         <version>${fastjson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.htmlcleaner</groupId>
+        <artifactId>htmlcleaner</artifactId>
+        <version>${htmlcleaner.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
