@@ -2,9 +2,10 @@ package com.cheng.spider.core.downloader;
 
 import com.cheng.spider.core.Page;
 import com.cheng.spider.core.Request;
-import com.cheng.spider.core.Task;
-import com.cheng.spider.core.util.UrlUtils;
 import com.cheng.spider.core.Site;
+import com.cheng.spider.core.Task;
+import com.cheng.spider.core.selector.PlainText;
+import com.cheng.spider.core.util.UrlUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -60,7 +61,7 @@ public class HttpClientDownloader implements Downloader {
 
                 Page page = new Page();
 //                page.setHtml(new Html(UrlUtils.fixAllRelativeHrefs(content, request.getUrl())));
-//                page.setUrl(new PlainText(request.getUrl()));
+                page.setUrl(new PlainText(request.getUrl()));
                 page.setRequest(request);
                 return page;
             } else {

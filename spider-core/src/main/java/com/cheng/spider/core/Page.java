@@ -1,5 +1,6 @@
 package com.cheng.spider.core;
 
+import com.cheng.spider.core.selector.Selectable;
 import com.google.common.base.Strings;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class Page {
 
     private String html;
 
-    private String url;
+    private Selectable url;
 
     /**
      * 保存抽取的结果
@@ -77,11 +78,11 @@ public class Page {
         this.html = html;
     }
 
-    public String getUrl() {
+    public Selectable getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(Selectable url) {
         this.url = url;
     }
 

@@ -26,6 +26,19 @@ public class PlainText implements Selectable {
         return selectList(selector, strings);
     }
 
+    @Override
+    public List<String> all() {
+        return strings;
+    }
+
+    @Override
+    public String toString() {
+        if (strings != null && !strings.isEmpty()) {
+            return strings.get(0);
+        }
+        return null;
+    }
+
     private Selectable select(Selector selector, List<String> strings) {
         List<String> results = new ArrayList<>();
         for (String regex : strings) {
@@ -47,4 +60,5 @@ public class PlainText implements Selectable {
         }
         return new PlainText(results);
     }
+
 }
