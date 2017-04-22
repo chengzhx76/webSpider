@@ -86,8 +86,8 @@ public class Page {
     }
 
     private boolean checkLegalUrl(String addr) {
-        return !(Strings.isNullOrEmpty(addr)
+        return Strings.isNullOrEmpty(addr)
                 || addr.equals("#")
-                || addr.startsWith("javascript:"));
+                || addr.startsWith("javascript:");
     }
 }
