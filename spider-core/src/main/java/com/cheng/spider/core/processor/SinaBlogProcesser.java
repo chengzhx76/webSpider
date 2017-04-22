@@ -2,9 +2,10 @@ package com.cheng.spider.core.processor;
 
 import com.cheng.spider.core.Page;
 import com.cheng.spider.core.Site;
+import com.cheng.spider.core.Spider;
 
 /**
- * Desc:
+ * Desc: 新浪博客
  * Author: 光灿
  * Date: 2017/4/22
  */
@@ -32,6 +33,6 @@ public class SinaBlogProcesser implements PageProcessor {
     }
 
     public static void main(String[] args) {
-
+        Spider.create(new SinaBlogProcesser()).run();
     }
 }

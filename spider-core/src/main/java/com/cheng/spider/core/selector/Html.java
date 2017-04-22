@@ -19,8 +19,14 @@ public class Html extends PlainText {
     }
 
     @Override
+    public Selectable xpath(String xpath) {
+        Selector selector = Selectors.xpath(xpath);
+        return selectList(selector, strings);
+    }
+
+    @Override
     public Selectable links() {
-        XpathSelector selector = Selectors.xpath("//a/@href");
+        Selector selector = Selectors.xpath("//a/@href");
         return selectList(selector, strings);
     }
 
