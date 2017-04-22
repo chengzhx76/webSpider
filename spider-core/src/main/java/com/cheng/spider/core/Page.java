@@ -19,7 +19,7 @@ public class Page {
 
     private List<Request> targetRequest = new ArrayList<>();
 
-    private String html;
+    private Selectable html;
 
     private Selectable url;
 
@@ -37,7 +37,6 @@ public class Page {
             if (checkLegalUrl(url)) {
                 break;
             }
-
             targetRequest.add(new Request(url));
         }
     }
@@ -70,11 +69,11 @@ public class Page {
         this.targetRequest = targetRequest;
     }
 
-    public String getHtml() {
+    public Selectable getHtml() {
         return html;
     }
 
-    public void setHtml(String html) {
+    public void setHtml(Selectable html) {
         this.html = html;
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class PlainText implements Selectable {
 
-    private List<String> strings = new ArrayList<>();
+    protected List<String> strings = new ArrayList<>();
 
     public PlainText(String string) {
         strings.add(string);
@@ -39,7 +39,17 @@ public class PlainText implements Selectable {
         return null;
     }
 
-    private Selectable select(Selector selector, List<String> strings) {
+    @Override
+    public Selectable xpath(String xpath) {
+        throw new UnsupportedOperationException("没实现");
+    }
+
+    @Override
+    public Selectable links() {
+        throw new UnsupportedOperationException("没实现");
+    }
+
+    protected Selectable select(Selector selector, List<String> strings) {
         List<String> results = new ArrayList<>();
         for (String regex : strings) {
             String result = selector.select(regex);
@@ -50,7 +60,7 @@ public class PlainText implements Selectable {
         return new PlainText(results);
     }
 
-    private Selectable selectList(Selector selector, List<String> strings) {
+    protected Selectable selectList(Selector selector, List<String> strings) {
         List<String> results = new ArrayList<>();
         for (String string : strings) {
             List<String> result = selector.selectList(string);

@@ -4,6 +4,7 @@ import com.cheng.spider.core.Page;
 import com.cheng.spider.core.Request;
 import com.cheng.spider.core.Site;
 import com.cheng.spider.core.Task;
+import com.cheng.spider.core.selector.Html;
 import com.cheng.spider.core.selector.PlainText;
 import com.cheng.spider.core.util.UrlUtils;
 import org.apache.commons.io.IOUtils;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Desc:
+ * Desc: Http下载器
  * Author: 光灿
  * Date: 2017/3/26
  */
@@ -60,7 +61,7 @@ public class HttpClientDownloader implements Downloader {
                 String content = IOUtils.toString(httpResponse.getEntity().getContent(), charset);
 
                 Page page = new Page();
-//                page.setHtml(new Html(UrlUtils.fixAllRelativeHrefs(content, request.getUrl())));
+                page.setHtml(new Html(UrlUtils.fixAllRelativeHrefs(content, request.getUrl())));
                 page.setUrl(new PlainText(request.getUrl()));
                 page.setRequest(request);
                 return page;

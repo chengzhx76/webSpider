@@ -15,4 +15,8 @@ public class Selectors {
         return new RegexSelector(regexStr, group);
     }
 
+    public static XpathSelector xpath(String xpathStr) {
+        return new XpathSelector(xpathStr);
+    }
+
 }

@@ -16,6 +16,19 @@ public interface Selectable {
     Selectable regex(String regex);
 
     /**
+     * xpath选择器
+     * @param xpath
+     * @return
+     */
+    Selectable xpath(String xpath);
+
+    /**
+     * 获取所有的连接
+     * @return
+     */
+    Selectable links();
+
+    /**
      * 抽取的所有结果
      * @return
      */
@@ -26,4 +39,5 @@ public interface Selectable {
      * @return
      */
     String toString();
+
 }

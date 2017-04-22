@@ -31,6 +31,10 @@ public class Site {
         DEFAULT_STATUS_CODE_SET.add(200);
     }
 
+    public static Site me() {
+        return new Site();
+    }
+
     public String getDomain() {
         return domain;
     }
@@ -62,8 +66,8 @@ public class Site {
         return startUrls;
     }
 
-    public Site setStartUrls(List<String> startUrls) {
-        this.startUrls = startUrls;
+    public Site addStartUrls(String startUrl) {
+        this.startUrls.add(startUrl);
         return this;
     }
 

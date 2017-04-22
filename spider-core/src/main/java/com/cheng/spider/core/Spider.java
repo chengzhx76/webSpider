@@ -1,5 +1,6 @@
 package com.cheng.spider.core;
 
+import com.cheng.spider.core.pipeline.ConsolePipeline;
 import com.cheng.spider.core.pipeline.Pipeline;
 import com.cheng.spider.core.scheduler.Scheduler;
 import com.cheng.spider.core.downloader.Downloader;
@@ -15,7 +16,7 @@ import java.util.List;
  * Author: 光灿
  * Date: 2017/3/25
  */
-public class Spider implements Task {
+public class Spider implements Runnable, Task {
 
     private Site site;
 
@@ -114,6 +115,56 @@ public class Spider implements Task {
             return site.getDomain();
         }
         return null;
+    }
+
+    @Override
+    public void run() {
+        if (startUrls != null) {
+            for (String startUrl : startUrls) {
+                scheduler.push(new Request(startUrl), this);
+            }
+        }
+
+        Request request = scheduler.poll(this);
+        if (pipelines.isEmpty()) {
+            pipelines.add(new ConsolePipeline());
+        }
+
+        // 单线程
+        while (request != null) {
+            processRequest(request);
+            request = scheduler.poll(this);
+        }
+    }
+
+    private void processRequest(Request request) {
+        Page page = downloader.download(request, this);
+        if (page == null) {
+            sleep(site.getSleepTime());
+            return;
+        }
+        processor.process(page);
+        addRequest(page);
+        for (Pipeline pipeline : pipelines) {
+            pipeline.process(page.getItems(), this);
+        }
+        sleep(site.getSleepTime());
+    }
+
+    private void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addRequest(Page page) {
+        if (page.getTargetRequest() != null && !page.getTargetRequest().isEmpty()) {
+            for (Request request : page.getTargetRequest()) {
+                scheduler.push(request, this);
+            }
+        }
     }
 
 }

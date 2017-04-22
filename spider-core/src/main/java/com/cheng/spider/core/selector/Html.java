@@ -1,5 +1,6 @@
 package com.cheng.spider.core.selector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +18,29 @@ public class Html extends PlainText {
         super(strings);
     }
 
+    @Override
+    public Selectable links() {
+        XpathSelector selector = Selectors.xpath("//a/@href");
+        return selectList(selector, strings);
+    }
 
+    @Override
+    protected Selectable select(Selector selector, List<String> strings) {
+        List<String> results = new ArrayList<>();
+        for (String string : strings) {
+            String result = selector.select(string);
+            results.add(result);
+        }
+        return new Html(results);
+    }
 
+    @Override
+    protected Selectable selectList(Selector selector, List<String> strings) {
+        List<String> results = new ArrayList<>();
+        for (String string : strings) {
+            List<String> result = selector.selectList(string);
+            results.addAll(result);
+        }
+        return new Html(results);
+    }
 }
