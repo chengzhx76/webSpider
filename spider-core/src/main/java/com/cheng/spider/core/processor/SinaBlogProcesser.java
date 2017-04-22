@@ -4,6 +4,8 @@ import com.cheng.spider.core.Page;
 import com.cheng.spider.core.Site;
 import com.cheng.spider.core.Spider;
 
+import java.util.List;
+
 /**
  * Desc: 新浪博客
  * Author: 光灿
@@ -15,7 +17,11 @@ public class SinaBlogProcesser implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        page.addTargetRequest(page.getHtml().xpath("//div[@class='articalfrontback SG_j_linedot1 clearfix']").links().all());
+
+        List<String> links = page.getHtml().xpath("//div[@class='articalfrontback SG_j_linedot1 clearfix']").links().all();
+        System.out.println(links);
+
+        page.addTargetRequest(links);
         page.putField("title", page.getHtml().xpath("//div[@class='articalTitle']/h2"));
         page.putField("id", page.getUrl().regex("http://blog\\.sina\\.com\\.cn/s/blog_(\\w+)"));
     }
