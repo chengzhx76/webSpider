@@ -20,7 +20,6 @@ public class SinaBlogProcesser implements PageProcessor {
 
         List<String> links = page.getHtml().xpath("//div[@class='articalfrontback SG_j_linedot1 clearfix']").links().all();
         System.out.println(links);
-
         page.addTargetRequest(links);
         page.putField("title", page.getHtml().xpath("//div[@class='articalTitle']/h2"));
         page.putField("id", page.getUrl().regex("http://blog\\.sina\\.com\\.cn/s/blog_(\\w+)"));
