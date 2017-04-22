@@ -1,7 +1,7 @@
 package com.cheng.spider.core.pipeline;
 
 import com.cheng.spider.core.ResultItems;
-import com.cheng.spider.core.Spider;
+import com.cheng.spider.core.Task;
 
 /**
  * Desc:
@@ -10,5 +10,5 @@ import com.cheng.spider.core.Spider;
  */
 public interface Pipeline {
 
-    void process(ResultItems items, Spider spider);
+    void process(ResultItems items, Task task);
 }
