@@ -23,6 +23,10 @@ public class Site {
 
     private int retryTimes = 0;
 
+    private boolean downloadImg = false;
+
+    private String imgPath;
+
     private static final Set<Integer> DEFAULT_STATUS_CODE_SET = new HashSet<>();
 
     private Set<Integer> acceptStatCode = DEFAULT_STATUS_CODE_SET;
@@ -95,6 +99,16 @@ public class Site {
 
     public Site setRetryTimes(int retryTimes) {
         this.retryTimes = retryTimes;
+        return this;
+    }
+
+    public Site isDownloadImg(boolean downloadImg) {
+        this.downloadImg = downloadImg;
+        return this;
+    }
+
+    public Site imgPath(String imgPath) {
+        this.imgPath = imgPath;
         return this;
     }
 

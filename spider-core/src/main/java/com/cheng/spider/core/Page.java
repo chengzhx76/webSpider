@@ -19,6 +19,8 @@ public class Page {
 
     private List<Request> targetRequest = new ArrayList<>();
 
+    private List<Request> targetImgsRequest = new ArrayList<>();
+
     private Selectable html;
 
     private Selectable url;
@@ -38,6 +40,12 @@ public class Page {
                 break;
             }
             targetRequest.add(new Request(url));
+        }
+    }
+
+    public void addTargetImgRequest(List<String> targetImgUrls, String title) {
+        for (String url : targetImgUrls) {
+            targetImgsRequest.add(new Request(url, title));
         }
     }
 
@@ -63,6 +71,10 @@ public class Page {
 
     public List<Request> getTargetRequest() {
         return targetRequest;
+    }
+
+    public List<Request> getTargetImgRequest() {
+        return targetImgsRequest;
     }
 
     public void setTargetRequest(List<Request> targetRequest) {

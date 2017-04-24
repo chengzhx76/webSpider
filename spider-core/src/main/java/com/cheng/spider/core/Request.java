@@ -6,7 +6,6 @@ package com.cheng.spider.core;
  * Date: 2017/3/25
  */
 public class Request {
-
     private String url;
 
     private Object[] extra;

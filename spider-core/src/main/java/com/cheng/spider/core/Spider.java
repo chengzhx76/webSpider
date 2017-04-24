@@ -1,5 +1,6 @@
 package com.cheng.spider.core;
 
+import com.cheng.spider.core.downloader.FileDownloader;
 import com.cheng.spider.core.pipeline.ConsolePipeline;
 import com.cheng.spider.core.pipeline.Pipeline;
 import com.cheng.spider.core.scheduler.Scheduler;
@@ -26,9 +27,13 @@ public class Spider implements Runnable, Task {
 
     private Downloader downloader = new HttpClientDownloader();
 
+    private Downloader imgDownloader = new FileDownloader();
+
     private List<Pipeline> pipelines = new ArrayList<>();
 
     private Scheduler scheduler = new QuenueScheduler();
+
+    private Scheduler imgScheduler = new QuenueScheduler();
 
     private PageProcessor processor;
 
@@ -125,15 +130,23 @@ public class Spider implements Runnable, Task {
             }
         }
 
-        Request request = scheduler.poll(this);
         if (pipelines.isEmpty()) {
             pipelines.add(new ConsolePipeline());
         }
 
-        // 单线程
+        // --------------单线程-----------------
+        // 网页内容下载
+        Request request = scheduler.poll(this);
         while (request != null) {
             processRequest(request);
             request = scheduler.poll(this);
+        }
+
+        // 图片下载
+        Request imgRequest = imgScheduler.poll(this);
+        while (imgRequest != null) {
+            processImgRequest(imgRequest);
+            imgRequest = imgScheduler.poll(this);
         }
     }
 
@@ -151,6 +164,18 @@ public class Spider implements Runnable, Task {
         sleep(site.getSleepTime());
     }
 
+    private void processImgRequest(Request request) {
+        Page page = imgDownloader.download(request, this);
+        if (page == null) {
+            sleep(site.getSleepTime());
+            return;
+        }
+        for (Pipeline pipeline : pipelines) {
+            pipeline.process(page.getItems(), this);
+        }
+        sleep(site.getSleepTime());
+    }
+
     private void sleep(int time) {
         try {
             Thread.sleep(time);
@@ -160,9 +185,17 @@ public class Spider implements Runnable, Task {
     }
 
     private void addRequest(Page page) {
+        // 处理网页内容
         if (page.getTargetRequest() != null && !page.getTargetRequest().isEmpty()) {
             for (Request request : page.getTargetRequest()) {
                 scheduler.push(request, this);
+            }
+        }
+
+        // 处理图片URL
+        if (page.getTargetImgRequest() != null && !page.getTargetImgRequest().isEmpty()) {
+            for (Request request : page.getTargetImgRequest()) {
+                imgScheduler.push(request, this);
             }
         }
     }

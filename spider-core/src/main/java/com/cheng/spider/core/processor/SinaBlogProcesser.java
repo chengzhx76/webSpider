@@ -21,17 +21,21 @@ public class SinaBlogProcesser implements PageProcessor {
         List<String> links = page.getHtml().xpath("//div[@class='articalfrontback SG_j_linedot1 clearfix']").links().all();
         System.out.println(links);
         page.addTargetRequest(links);
+
+        List<String> imgLinks = page.getHtml().xpath("//div[@class='articalfrontback SG_j_linedot1 clearfix']").links().all();
+        page.addTargetImgRequest(imgLinks, page.getHtml().xpath("//div[@class='articalTitle']/h2").toString());
+
         page.putField("title", page.getHtml().xpath("//div[@class='articalTitle']/h2"));
         page.putField("id", page.getUrl().regex("http://blog\\.sina\\.com\\.cn/s/blog_(\\w+)"));
     }
 
     @Override
     public Site getSite() {
-
         if (site == null) {
             site = Site.me().setDomain("blog.sina.com.cn")
                     .addStartUrls("http://blog.sina.com.cn/s/blog_4701280b0102egl0.html")
                     .setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31")
+                    .isDownloadImg(true)
                     .setSleepTime(3000);
         }
         return site;
