@@ -1,16 +1,19 @@
 package com.cheng.spider.core;
 
-import com.cheng.spider.core.downloader.FileDownloader;
-import com.cheng.spider.core.pipeline.ConsolePipeline;
-import com.cheng.spider.core.pipeline.Pipeline;
-import com.cheng.spider.core.scheduler.Scheduler;
 import com.cheng.spider.core.downloader.Downloader;
 import com.cheng.spider.core.downloader.HttpClientDownloader;
+import com.cheng.spider.core.downloader.MediaDownloader;
+import com.cheng.spider.core.pipeline.ConsolePipeline;
+import com.cheng.spider.core.pipeline.Pipeline;
 import com.cheng.spider.core.processor.PageProcessor;
 import com.cheng.spider.core.scheduler.QuenueScheduler;
+import com.cheng.spider.core.scheduler.Scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Desc:
@@ -27,7 +30,7 @@ public class Spider implements Runnable, Task {
 
     private Downloader downloader = new HttpClientDownloader();
 
-    private Downloader imgDownloader = new FileDownloader();
+    private Downloader imgDownloader = new MediaDownloader();
 
     private List<Pipeline> pipelines = new ArrayList<>();
 
@@ -36,6 +39,16 @@ public class Spider implements Runnable, Task {
     private Scheduler imgScheduler = new QuenueScheduler();
 
     private PageProcessor processor;
+
+    private ExecutorService executorService;
+
+    private AtomicInteger state = new AtomicInteger(STATE_INIT);
+
+    private final static int STATE_INIT = 0;
+
+    private final static int STATE_RUNNING = 1;
+
+    private final static int STATE_STOPPED = 2;
 
     /**
      * 使用已定义抽取规则新建一个爬虫
@@ -61,6 +74,7 @@ public class Spider implements Runnable, Task {
      * @return 新建的爬虫
      */
     public Spider startUrls(List<String> startUrls) {
+        checkIfNotRunning();
         this.startUrls = startUrls;
         return this;
     }
@@ -81,6 +95,7 @@ public class Spider implements Runnable, Task {
      * @return this
      */
     public Spider scheduler(Scheduler scheduler) {
+        checkIfNotRunning();
         this.scheduler = scheduler;
         return this;
     }
@@ -91,6 +106,7 @@ public class Spider implements Runnable, Task {
      * @return this
      */
     public Spider pipeline(Pipeline pipeline) {
+        checkIfNotRunning();
         this.pipelines.add(pipeline);
         return this;
     }
@@ -101,10 +117,26 @@ public class Spider implements Runnable, Task {
      * @return this
      */
     public Spider downloader(Downloader downloader) {
+        checkIfNotRunning();
         this.downloader = downloader;
         return this;
     }
 
+
+    public void runAsync() {
+        Thread thread = new Thread(this);
+        thread.setDaemon(false);
+        thread.start();
+    }
+
+    public Spider thread(int threadNum) {
+        checkIfNotRunning();
+        if (threadNum <= 1) {
+            throw new IllegalArgumentException("threadNum should be more than one!");
+        }
+        executorService = Executors.newFixedThreadPool(threadNum);
+        return this;
+    }
 
     @Override
     public Site getSite() {
@@ -134,20 +166,50 @@ public class Spider implements Runnable, Task {
             pipelines.add(new ConsolePipeline());
         }
 
-        // --------------单线程-----------------
         // 网页内容下载
         Request request = scheduler.poll(this);
-        while (request != null) {
-            processRequest(request);
-            request = scheduler.poll(this);
+
+        if (executorService == null) { // 单线程
+            while (request != null) {
+                processRequest(request);
+                request = scheduler.poll(this);
+            }
+        } else { // 多线程
+            final AtomicInteger threadAlive = new AtomicInteger(0);
+            while (true) {
+                if (request == null) {
+                    sleep(site.getSleepTime());
+                } else {
+                    final Request finalRequest = request;
+                    threadAlive.getAndIncrement();
+                    executorService.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            processRequest(finalRequest);
+                            threadAlive.decrementAndGet();
+                        }
+                    });
+                }
+
+                request = scheduler.poll(this);
+                if (threadAlive.get() == 0) {
+                    request = scheduler.poll(this);
+                    if (request == null) {
+                        break;
+                    }
+                }
+            }
+            executorService.shutdown();
         }
 
+        state.compareAndSet(STATE_RUNNING, STATE_STOPPED);
+
         // 图片下载
-        Request imgRequest = imgScheduler.poll(this);
+        /*Request imgRequest = imgScheduler.poll(this);
         while (imgRequest != null) {
             processImgRequest(imgRequest);
             imgRequest = imgScheduler.poll(this);
-        }
+        }*/
     }
 
     private void processRequest(Request request) {
@@ -176,14 +238,6 @@ public class Spider implements Runnable, Task {
         sleep(site.getSleepTime());
     }
 
-    private void sleep(int time) {
-        try {
-            Thread.sleep(time);
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void addRequest(Page page) {
         // 处理网页内容
         if (page.getTargetRequest() != null && !page.getTargetRequest().isEmpty()) {
@@ -197,6 +251,20 @@ public class Spider implements Runnable, Task {
             for (Request request : page.getTargetImgRequest()) {
                 imgScheduler.push(request, this);
             }
+        }
+    }
+
+    private void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkIfNotRunning() {
+        if (state.get() == STATE_RUNNING) {
+            throw new IllegalStateException("爬虫已经在运行！");
         }
     }
 

@@ -18,15 +18,15 @@ import java.io.InputStream;
  * Author: 光灿
  * Date: 2017/4/22
  */
-public class FileDownloader implements Downloader {
+public class MediaDownloader implements Downloader {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private String path = "c:\\";
 
-    public FileDownloader(){}
+    public MediaDownloader(){}
 
-    public FileDownloader(String path) {
+    public MediaDownloader(String path) {
         this.path = path;
     }
     @Override
