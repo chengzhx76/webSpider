@@ -122,13 +122,20 @@ public class Spider implements Runnable, Task {
         return this;
     }
 
-
+    /**
+     * 异步抓取
+     */
     public void runAsync() {
         Thread thread = new Thread(this);
         thread.setDaemon(false);
         thread.start();
     }
 
+    /**
+     * 设置线程数
+     * @param threadNum
+     * @return
+     */
     public Spider thread(int threadNum) {
         checkIfNotRunning();
         if (threadNum <= 1) {
