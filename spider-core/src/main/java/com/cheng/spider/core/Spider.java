@@ -245,6 +245,10 @@ public class Spider implements Runnable, Task {
         sleep(site.getSleepTime());
     }
 
+    /**
+     * 解析后获取URL
+     * @param page
+     */
     private void addRequest(Page page) {
         // 处理网页内容
         if (page.getTargetRequest() != null && !page.getTargetRequest().isEmpty()) {
@@ -269,6 +273,9 @@ public class Spider implements Runnable, Task {
         }
     }
 
+    /**
+     * 检查是否还在运行
+     */
     private void checkIfNotRunning() {
         if (state.get() == STATE_RUNNING) {
             throw new IllegalStateException("爬虫已经在运行！");
