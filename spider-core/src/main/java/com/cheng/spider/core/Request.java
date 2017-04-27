@@ -1,5 +1,6 @@
 package com.cheng.spider.core;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +9,10 @@ import java.util.Map;
  * Author: 光灿
  * Date: 2017/3/25
  */
-public class Request {
+public class Request implements Serializable {
+
+    private static final long serialVersionUID = 2062192774891352043L;
+
     private String url;
 
     private Map<String, Object> extra;

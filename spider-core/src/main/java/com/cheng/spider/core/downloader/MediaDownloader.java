@@ -43,7 +43,7 @@ public class MediaDownloader implements Downloader {
         int statusCode = httpResponse.getStatusLine().getStatusCode();
         if (statusCode == 200) {
             HttpEntity entity = httpResponse.getEntity();
-            path = path + File.separator + request.getExtra()[0] + File.separator + getImgName(request);
+            path = path + File.separator + request.getExtra().get("TITLE") + File.separator + getImgName(request);
             InputStream input = null;
             FileOutputStream output = null;
             try {

@@ -5,6 +5,7 @@ import com.cheng.spider.core.Task;
 
 import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 /**
@@ -16,31 +17,45 @@ public class PriorityScheduler implements Scheduler {
 
     private static final int INITIAL_CAPACITY = 5;
 
-    private BlockingQueue noPriorityQueue = new PriorityBlockingQueue();
+    private BlockingQueue<Request> noPriorityQueue = new LinkedBlockingQueue<>();
 
-    private PriorityBlockingQueue<Request> priorityQueuePlus = new PriorityBlockingQueue<Request>(INITIAL_CAPACITY, new Comparator<Request>() {
+    private PriorityBlockingQueue<Request> priorityQueuePlus = new PriorityBlockingQueue<>(INITIAL_CAPACITY, new Comparator<Request>() {
         @Override
         public int compare(Request o1, Request o2) {
-            return compareLong(o1.getPriority(), o2.getPriority());
+            return -compareLong(o1.getPriority(), o2.getPriority());
         }
     });
 
-    private PriorityBlockingQueue<Request> priorityQueueMinus = new PriorityBlockingQueue<Request>(INITIAL_CAPACITY, new Comparator<Request>() {
+    private PriorityBlockingQueue<Request> priorityQueueMinus = new PriorityBlockingQueue<>(INITIAL_CAPACITY, new Comparator<Request>() {
         @Override
         public int compare(Request o1, Request o2) {
-            return compareLong(o1.getPriority(), o2.getPriority());
+            return -compareLong(o1.getPriority(), o2.getPriority());
         }
     });
 
 
     @Override
     public void push(Request request, Task task) {
-
+        if (request.getPriority() == 0L) {
+            noPriorityQueue.add(request);
+        }else if (request.getPriority() > 0L) {
+            priorityQueuePlus.put(request);
+        }else {
+            priorityQueueMinus.put(request);
+        }
     }
 
     @Override
     public Request poll(Task task) {
-        return null;
+        Request request = priorityQueuePlus.poll();
+        if (request != null) {
+            return request;
+        }
+        request = noPriorityQueue.poll();
+        if (request != null) {
+            return request;
+        }
+        return priorityQueueMinus.poll();
     }
 
     private int compareLong(long o1, long o2) {

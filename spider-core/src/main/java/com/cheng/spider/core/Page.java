@@ -45,7 +45,7 @@ public class Page {
 
     public void addTargetImgRequest(List<String> targetImgUrls, String title) {
         for (String url : targetImgUrls) {
-            targetImgsRequest.add(new Request(url, title));
+            targetImgsRequest.add(new Request(url).putExtra("TITLE", title));
         }
     }
 
