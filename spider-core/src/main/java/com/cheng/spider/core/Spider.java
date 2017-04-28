@@ -30,13 +30,13 @@ public class Spider implements Runnable, Task {
 
     private Downloader downloader = new HttpClientDownloader();
 
-    private Downloader imgDownloader = new MediaDownloader();
+    private Downloader mediaDownloader = new MediaDownloader();
 
     private List<Pipeline> pipelines = new ArrayList<>();
 
     private Scheduler scheduler = new QuenueScheduler();
 
-    private Scheduler imgScheduler = new QuenueScheduler();
+    private Scheduler mediaScheduler = new QuenueScheduler();
 
     private PageProcessor processor;
 
@@ -212,11 +212,13 @@ public class Spider implements Runnable, Task {
         state.compareAndSet(STATE_RUNNING, STATE_STOPPED);
 
         // 图片下载
-        /*Request imgRequest = imgScheduler.poll(this);
-        while (imgRequest != null) {
-            processImgRequest(imgRequest);
-            imgRequest = imgScheduler.poll(this);
-        }*/
+        if (isDownloadMedia()) {
+            /*Request mediaRequest = mediaScheduler.poll(this);
+            while (mediaRequest != null) {
+                processMediaRequest(mediaRequest);
+                mediaRequest = mediaScheduler.poll(this);
+            }*/
+        }
     }
 
     private void processRequest(Request request) {
@@ -233,8 +235,8 @@ public class Spider implements Runnable, Task {
         sleep(site.getSleepTime());
     }
 
-    private void processImgRequest(Request request) {
-        Page page = imgDownloader.download(request, this);
+    private void processMediaRequest(Request request) {
+        Page page = mediaDownloader.download(request, this);
         if (page == null) {
             sleep(site.getSleepTime());
             return;
@@ -258,9 +260,11 @@ public class Spider implements Runnable, Task {
         }
 
         // 处理图片URL
-        if (page.getTargetImgRequest() != null && !page.getTargetImgRequest().isEmpty()) {
-            for (Request request : page.getTargetImgRequest()) {
-                imgScheduler.push(request, this);
+        if (isDownloadMedia()) {
+            if (page.getTargetMediaRequest() != null && !page.getTargetMediaRequest().isEmpty()) {
+                for (Request request : page.getTargetMediaRequest()) {
+                    mediaScheduler.push(request, this);
+                }
             }
         }
     }
@@ -280,6 +284,14 @@ public class Spider implements Runnable, Task {
         if (state.get() == STATE_RUNNING) {
             throw new IllegalStateException("爬虫已经在运行！");
         }
+    }
+
+    /**
+     * 是否下载媒体资源
+     * @return
+     */
+    private boolean isDownloadMedia() {
+        return site.getDownloadMedia();
     }
 
 }

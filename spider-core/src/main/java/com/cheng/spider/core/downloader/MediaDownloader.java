@@ -22,16 +22,10 @@ public class MediaDownloader implements Downloader {
 
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    private String path = "c:\\";
-
-    public MediaDownloader(){}
-
-    public MediaDownloader(String path) {
-        this.path = path;
-    }
     @Override
     public Page download(Request request, Task task) {
         Site site = task.getSite();
+        String directory = site.getDirectory();
         HttpClient httpClient = HttpClientPool.getInstance().getClient(site);
         HttpGet httpGet = new HttpGet(request.getUrl());
         HttpResponse httpResponse  = null;
@@ -43,12 +37,12 @@ public class MediaDownloader implements Downloader {
         int statusCode = httpResponse.getStatusLine().getStatusCode();
         if (statusCode == 200) {
             HttpEntity entity = httpResponse.getEntity();
-            path = path + File.separator + request.getExtra().get("TITLE") + File.separator + getImgName(request);
+            directory = directory + File.separator + request.getSubdires() + File.separator + getMediaName(request);
             InputStream input = null;
             FileOutputStream output = null;
             try {
                 input = entity.getContent();
-                output = new FileOutputStream(new File(path));
+                output = new FileOutputStream(new File(directory));
                 byte[] buf = new byte[1024];
                 int length = 0;
                 while ((length = input.read(buf, 0, buf.length)) != -1) {
@@ -70,7 +64,7 @@ public class MediaDownloader implements Downloader {
         return null;
     }
 
-    private String getImgName(Request request) {
+    private String getMediaName(Request request) {
         return request.getUrl().substring(request.getUrl().lastIndexOf("/") + 1, request.getUrl().length());
     }
 

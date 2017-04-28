@@ -13,7 +13,9 @@ public class Request implements Serializable {
 
     private static final long serialVersionUID = 2062192774891352043L;
 
-    private String url;
+    private String url;;
+
+    private String subdires;
 
     private Map<String, Object> extra;
 
@@ -54,4 +56,14 @@ public class Request implements Serializable {
     public long getPriority() {
         return priority;
     }
+
+    public Request setSubdires(String subdires) {
+        this.subdires = subdires;
+        return this;
+    }
+
+    public String getSubdires() {
+        return subdires;
+    }
+
 }

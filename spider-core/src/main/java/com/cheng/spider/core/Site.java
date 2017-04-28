@@ -23,9 +23,9 @@ public class Site {
 
     private int retryTimes = 0;
 
-    private boolean downloadImg = false;
+    private boolean downloadMedia = false;
 
-    private String imgPath;
+    private String directory;
 
     private static final Set<Integer> DEFAULT_STATUS_CODE_SET = new HashSet<>();
 
@@ -102,14 +102,22 @@ public class Site {
         return this;
     }
 
-    public Site isDownloadImg(boolean downloadImg) {
-        this.downloadImg = downloadImg;
+    public Site isDownloadMedia(boolean downloadMedia) {
+        this.downloadMedia = downloadMedia;
         return this;
     }
 
-    public Site imgPath(String imgPath) {
-        this.imgPath = imgPath;
+    public boolean getDownloadMedia() {
+        return downloadMedia;
+    }
+
+    public Site directory(String directory) {
+        this.directory = directory;
         return this;
+    }
+
+    public String getDirectory() {
+        return directory;
     }
 
     public Set<Integer> getAcceptStatCode() {
