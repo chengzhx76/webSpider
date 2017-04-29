@@ -4,6 +4,7 @@ logs
 temp
 .idea
 *.iml
+*.log
 
 #不忽略的文件
 !.gitignore
