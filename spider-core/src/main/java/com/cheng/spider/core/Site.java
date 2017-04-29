@@ -25,7 +25,7 @@ public class Site {
 
     private boolean downloadMedia = false;
 
-    private String directory;
+    private String mediaDirectory;
 
     private static final Set<Integer> DEFAULT_STATUS_CODE_SET = new HashSet<>();
 
@@ -111,13 +111,13 @@ public class Site {
         return downloadMedia;
     }
 
-    public Site setDirectory(String directory) {
-        this.directory = directory;
+    public Site setMediaDirectory(String mediaDirectory) {
+        this.mediaDirectory = mediaDirectory;
         return this;
     }
 
-    public String getDirectory() {
-        return directory;
+    public String getMediaDirectory() {
+        return mediaDirectory;
     }
 
     public Set<Integer> getAcceptStatCode() {

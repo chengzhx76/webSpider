@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  * url及html处理工具类。<br>
- * @author code4crafter@gmail.com <br>
+ * @author code4crafter@gmail.com <br>保留版权
  * Date: 13-4-21
  * Time: 下午1:52
  */

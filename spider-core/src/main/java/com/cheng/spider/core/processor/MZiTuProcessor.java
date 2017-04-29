@@ -38,8 +38,6 @@ public class MZiTuProcessor implements PageProcessor {
 
         // http://www.mzitu.com/91263
         page.putField("id", page.getUrl().regex("http://www.mzitu.com/(\\w+)"));
-        //page.putField("title", page.getHtml().xpath("//div[@class='content']/h2"));
-        //page.putField("主图", page.getHtml().xpath("//div[@class='main-image']/p/a/img/@src"));
     }
 
     @Override
@@ -50,8 +48,8 @@ public class MZiTuProcessor implements PageProcessor {
                     .addStartUrls("http://www.mzitu.com/")
                     .setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31")
                     .isDownloadMedia(true)
-                    //.setDirectory("C:\\QQDownload\\mzt\\")
-                    .setDirectory("/root/downloads/")
+                    .setMediaDirectory("C:\\QQDownload\\mzt\\")
+                    //.setMediaDirectory("/root/downloads/")
                     .setSleepTime(1000);
         }
         return site;

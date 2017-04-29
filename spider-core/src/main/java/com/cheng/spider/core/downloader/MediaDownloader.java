@@ -27,7 +27,7 @@ public class MediaDownloader implements Downloader {
     @Override
     public Page download(Request request, Task task) {
         Site site = task.getSite();
-        String directory = site.getDirectory();
+        String directory = site.getMediaDirectory();
         HttpClient httpClient = HttpClientPool.getInstance().getClient(site);
         HttpGet httpGet = new HttpGet(request.getUrl());
         HttpResponse httpResponse;

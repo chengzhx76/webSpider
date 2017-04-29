@@ -1,5 +1,7 @@
 package com.cheng.spider.core;
 
+import com.cheng.spider.core.util.Constant;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,7 @@ public class Request implements Serializable {
 
     private static final long serialVersionUID = 2062192774891352043L;
 
-    private String url;;
+    private String url;
 
     private String subdires;
 
@@ -21,11 +23,7 @@ public class Request implements Serializable {
 
     private long priority;
 
-    private String type;
-
-    //public Request(String url) {
-    //    this.url = url;
-    //}
+    private String type = Constant.HTML;
 
     public Request(String url, String type) {
         this.url = url;
@@ -35,6 +33,22 @@ public class Request implements Serializable {
     public Request(String url, long priority) {
         this.url = url;
         this.priority = priority;
+    }
+
+    public static Request createTypeRequest(String url, String type) {
+        return new Request(url, type);
+    }
+
+    public static Request createMediaRequest(String url) {
+        return new Request(url, Constant.MEDIA);
+    }
+
+    public static Request createHtmlRequest(String url) {
+        return new Request(url, Constant.HTML);
+    }
+
+    public static Request createPriorityRequest(String url, long priority) {
+        return new Request(url, priority);
     }
 
     public String getUrl() {

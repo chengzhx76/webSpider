@@ -26,55 +26,46 @@ public class Page {
 
     private Selectable url;
 
-    /**
-     * 保存抽取的结果
-     * @param key
-     * @param field
-     */
-    public void putField(String key, Object field) {
-        items.putField(key, field);
+    public void addTargetMediaRequest(List<String> targetUrls) {
+        addTargetMediaSubdirRequest(targetUrls, null);
     }
 
-    public void addTargetMediaRequest(List<String> targetMediaUrls) {
-        addTargetMediaSubdirRequest(targetMediaUrls, null);
+    public void addTargetMediaSubdirRequest(List<String> targetUrls, String subdires) {
+        addTargetMediaSubdirTitleRequest(targetUrls, subdires, null);
     }
 
-    public void addTargetMediaSubdirRequest(List<String> targetMediaUrls, String subdires) {
-        addTargetMediaSubdirTitleRequest(targetMediaUrls, subdires, null);
+    public void addTargetMediaTitleRequest(List<String> targetUrls, String title) {
+        addTargetMediaSubdirTitleRequest(targetUrls, null, title);
     }
 
-    public void addTargetMediaTitleRequest(List<String> targetMediaUrls, String title) {
-        addTargetMediaSubdirTitleRequest(targetMediaUrls, null, title);
-    }
-
-    public void addTargetMediaSubdirTitleRequest(List<String> targetMediaUrls, String subdires, String title) {
-        for (String url : targetMediaUrls) {
+    public void addTargetMediaSubdirTitleRequest(List<String> targetUrls, String subdires, String title) {
+        for (String url : targetUrls) {
             addTargetMediaSubdirTitleRequest(url, subdires, title);
         }
     }
 
-    public void addTargetMediaRequest(String targetMediaUrl) {
-        addTargetMediaSubdirRequest(targetMediaUrl, null);
+    public void addTargetMediaRequest(String targetUrl) {
+        addTargetMediaSubdirRequest(targetUrl, null);
     }
 
-    public void addTargetMediaTitleRequest(String targetMediaUrl, String title) {
-        addTargetMediaSubdirTitleRequest(targetMediaUrl, null, title);
+    public void addTargetMediaTitleRequest(String targetUrl, String title) {
+        addTargetMediaSubdirTitleRequest(targetUrl, null, title);
     }
 
-    public void addTargetMediaSubdirRequest(String targetMediaUrl, String subdires) {
-        addTargetMediaSubdirTitleRequest(targetMediaUrl, subdires, null);
+    public void addTargetMediaSubdirRequest(String targetUrl, String subdires) {
+        addTargetMediaSubdirTitleRequest(targetUrl, subdires, null);
     }
 
-    public void addTargetMediaSubdirTitleRequest(String targetMediaUrl, String subdires, String title) {
-        if (!Strings.isNullOrEmpty(targetMediaUrl)) {
+    public void addTargetMediaSubdirTitleRequest(String targetUrl, String subdires, String title) {
+        if (!Strings.isNullOrEmpty(targetUrl)) {
             if (!Strings.isNullOrEmpty(subdires) && !Strings.isNullOrEmpty(title)) {
-                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA).setSubdires(subdires).putExtra(Constant.TITLE, title));
+                targetMediaRequest.add(Request.createMediaRequest(targetUrl).setSubdires(subdires).putExtra(Constant.TITLE, title));
             } else if (!Strings.isNullOrEmpty(subdires)) {
-                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA).setSubdires(subdires));
+                targetMediaRequest.add(Request.createMediaRequest(targetUrl).setSubdires(subdires));
             } else if (!Strings.isNullOrEmpty(title)) {
-                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA).putExtra(Constant.TITLE, title));
+                targetMediaRequest.add(Request.createMediaRequest(targetUrl).putExtra(Constant.TITLE, title));
             } else {
-                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA));
+                targetMediaRequest.add(Request.createMediaRequest(targetUrl));
             }
         }
     }
@@ -90,6 +81,15 @@ public class Page {
             return;
         }
         targetRequest.add(new Request(requestUrl, Constant.HTML));
+    }
+
+    /**
+     * 保存抽取的结果
+     * @param key
+     * @param field
+     */
+    public void putField(String key, Object field) {
+        items.putField(key, field);
     }
 
     public Request getRequest() {
