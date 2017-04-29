@@ -43,9 +43,27 @@ public class Page {
         }
     }
 
-    public void addTargetMediaRequest(List<String> targetMediaUrls, String title) {
+    public void addTargetMediaRequest(List<String> targetMediaUrls, String subdires) {
         for (String url : targetMediaUrls) {
-            targetMediaRequest.add(new Request(url).setSubdires(title));
+            targetMediaRequest.add(new Request(url).setSubdires(subdires));
+        }
+    }
+
+    public void addTargetMediaRequest(String targetMediaUrl, String subdires) {
+        if (!Strings.isNullOrEmpty(targetMediaUrl)) {
+            targetMediaRequest.add(new Request(targetMediaUrl).setSubdires(subdires));
+        }
+    }
+
+    public void addTargetMediaRequest(List<String> targetMediaUrls) {
+        for (String url : targetMediaUrls) {
+            targetMediaRequest.add(new Request(url));
+        }
+    }
+
+    public void addTargetMediaRequest(String targetMediaUrl) {
+        if (!Strings.isNullOrEmpty(targetMediaUrl)) {
+            targetMediaRequest.add(new Request(targetMediaUrl));
         }
     }
 

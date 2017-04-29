@@ -66,4 +66,14 @@ public class Request implements Serializable {
         return subdires;
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Request{");
+        sb.append("url='").append(url).append('\'');
+        sb.append(", subdires='").append(subdires).append('\'');
+        sb.append(", extra=").append(extra);
+        sb.append(", priority=").append(priority);
+        sb.append('}');
+        return sb.toString();
+    }
 }

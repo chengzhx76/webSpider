@@ -111,7 +111,7 @@ public class Site {
         return downloadMedia;
     }
 
-    public Site directory(String directory) {
+    public Site setDirectory(String directory) {
         this.directory = directory;
         return this;
     }

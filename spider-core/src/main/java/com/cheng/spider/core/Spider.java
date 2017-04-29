@@ -8,6 +8,8 @@ import com.cheng.spider.core.pipeline.Pipeline;
 import com.cheng.spider.core.processor.PageProcessor;
 import com.cheng.spider.core.scheduler.QuenueScheduler;
 import com.cheng.spider.core.scheduler.Scheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Date: 2017/3/25
  */
 public class Spider implements Runnable, Task {
+
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private Site site;
 
@@ -41,6 +45,8 @@ public class Spider implements Runnable, Task {
     private PageProcessor processor;
 
     private ExecutorService executorService;
+
+    private AtomicInteger htmlState = new AtomicInteger(STATE_INIT);
 
     private AtomicInteger state = new AtomicInteger(STATE_INIT);
 
@@ -163,6 +169,11 @@ public class Spider implements Runnable, Task {
 
     @Override
     public void run() {
+
+        if (!state.compareAndSet(STATE_INIT, STATE_RUNNING)) {
+            throw new IllegalStateException("Spider is already running!");
+        }
+
         if (startUrls != null) {
             for (String startUrl : startUrls) {
                 scheduler.push(new Request(startUrl), this);
@@ -175,51 +186,101 @@ public class Spider implements Runnable, Task {
 
         // 网页内容下载
         Request request = scheduler.poll(this);
+        new Thread(new DownloadContent(request, this), "HTMLDownload").start();
 
-        if (executorService == null) { // 单线程
-            while (request != null) {
-                processRequest(request);
-                request = scheduler.poll(this);
+        // 图片下载
+        if (isDownloadMedia()) {
+            Request mediaRequest = mediaScheduler.poll(this);
+            new Thread(new DownloadMedia(mediaRequest, this), "MediaDownload").start();
+        }
+    }
+
+    class DownloadContent implements Runnable {
+        private Request request;
+        private Task task;
+
+        public DownloadContent(Request request, Task task) {
+            this.request = request;
+            this.task = task;
+        }
+
+        @Override
+        public void run() {
+            log.info("下载HTML--Start");
+            if (!htmlState.compareAndSet(STATE_INIT, STATE_RUNNING)) {
+                throw new IllegalStateException("htmlDownload is already running!");
             }
-        } else { // 多线程
-            final AtomicInteger threadAlive = new AtomicInteger(0);
+            if (executorService == null) { // 单线程
+                while (request != null) {
+                    processRequest(request);
+                    request = scheduler.poll(task);
+                }
+            } else { // 多线程
+                final AtomicInteger threadAlive = new AtomicInteger(0);
+                while (true) {
+                    if (request == null) {
+                        sleep(site.getSleepTime());
+                    } else {
+                        final Request finalRequest = request;
+                        threadAlive.getAndIncrement();
+                        executorService.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                processRequest(finalRequest);
+                                threadAlive.decrementAndGet();
+                            }
+                        });
+                    }
+
+                    request = scheduler.poll(task);
+                    if (threadAlive.get() == 0) {
+                        request = scheduler.poll(task);
+                        if (request == null) {
+                            break;
+                        }
+                    }
+                }
+                executorService.shutdown();
+            }
+            htmlState.compareAndSet(STATE_RUNNING, STATE_STOPPED);
+            log.info("下载HTML--End");
+        }
+    }
+
+    class DownloadMedia implements Runnable {
+        private Request mediaRequest;
+        private Task task;
+
+        public DownloadMedia(Request mediaRequest, Task task) {
+            this.mediaRequest = mediaRequest;
+            this.task = task;
+        }
+
+        @Override
+        public void run() {
+            log.info("下载IMG--Start");
+
             while (true) {
-                if (request == null) {
+                if (mediaRequest == null) {
                     sleep(site.getSleepTime());
                 } else {
-                    final Request finalRequest = request;
-                    threadAlive.getAndIncrement();
-                    executorService.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            processRequest(finalRequest);
-                            threadAlive.decrementAndGet();
-                        }
-                    });
+                    processMediaRequest(mediaRequest);
                 }
+                mediaRequest = mediaScheduler.poll(task);
 
-                request = scheduler.poll(this);
-                if (threadAlive.get() == 0) {
-                    request = scheduler.poll(this);
-                    if (request == null) {
+                if (htmlState.get() == STATE_STOPPED) {
+                    if (mediaRequest == null) {
                         break;
                     }
                 }
             }
-            executorService.shutdown();
-        }
 
-        state.compareAndSet(STATE_RUNNING, STATE_STOPPED);
+            log.info("下载IMG--End");
 
-        // 图片下载
-        if (isDownloadMedia()) {
-            /*Request mediaRequest = mediaScheduler.poll(this);
-            while (mediaRequest != null) {
-                processMediaRequest(mediaRequest);
-                mediaRequest = mediaScheduler.poll(this);
-            }*/
+            state.compareAndSet(STATE_RUNNING, STATE_STOPPED);
         }
     }
+
 
     private void processRequest(Request request) {
         Page page = downloader.download(request, this);
@@ -237,13 +298,13 @@ public class Spider implements Runnable, Task {
 
     private void processMediaRequest(Request request) {
         Page page = mediaDownloader.download(request, this);
-        if (page == null) {
-            sleep(site.getSleepTime());
-            return;
-        }
-        for (Pipeline pipeline : pipelines) {
-            pipeline.process(page.getItems(), this);
-        }
+        //if (page == null) {
+        //    sleep(site.getSleepTime());
+        //    return;
+        //}
+        //for (Pipeline pipeline : pipelines) {
+        //    pipeline.process(page.getItems(), this);
+        //}
         sleep(site.getSleepTime());
     }
 

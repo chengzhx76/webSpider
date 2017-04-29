@@ -1,6 +1,7 @@
 package com.cheng.spider.core.selector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -28,7 +29,8 @@ public class PlainText implements Selectable {
 
     @Override
     public List<String> all() {
-        return strings;
+        //return strings;
+        return new ArrayList<>(new HashSet<>(strings));
     }
 
     @Override
