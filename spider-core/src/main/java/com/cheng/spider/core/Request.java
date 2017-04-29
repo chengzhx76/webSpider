@@ -21,8 +21,15 @@ public class Request implements Serializable {
 
     private long priority;
 
-    public Request(String url) {
+    private String type;
+
+    //public Request(String url) {
+    //    this.url = url;
+    //}
+
+    public Request(String url, String type) {
         this.url = url;
+        this.type = type;
     }
 
     public Request(String url, long priority) {
@@ -66,6 +73,15 @@ public class Request implements Serializable {
         return subdires;
     }
 
+    public Request setType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Request{");
@@ -73,6 +89,7 @@ public class Request implements Serializable {
         sb.append(", subdires='").append(subdires).append('\'');
         sb.append(", extra=").append(extra);
         sb.append(", priority=").append(priority);
+        sb.append(", type=").append(type);
         sb.append('}');
         return sb.toString();
     }

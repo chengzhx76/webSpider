@@ -8,6 +8,7 @@ import com.cheng.spider.core.pipeline.Pipeline;
 import com.cheng.spider.core.processor.PageProcessor;
 import com.cheng.spider.core.scheduler.QuenueScheduler;
 import com.cheng.spider.core.scheduler.Scheduler;
+import com.cheng.spider.core.util.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +46,6 @@ public class Spider implements Runnable, Task {
     private PageProcessor processor;
 
     private ExecutorService executorService;
-
-    private AtomicInteger htmlState = new AtomicInteger(STATE_INIT);
 
     private AtomicInteger state = new AtomicInteger(STATE_INIT);
 
@@ -167,6 +166,7 @@ public class Spider implements Runnable, Task {
         return null;
     }
 
+    private AtomicInteger htmlState = new AtomicInteger(STATE_INIT);
     @Override
     public void run() {
 
@@ -176,7 +176,7 @@ public class Spider implements Runnable, Task {
 
         if (startUrls != null) {
             for (String startUrl : startUrls) {
-                scheduler.push(new Request(startUrl), this);
+                scheduler.push(new Request(startUrl, Constant.HTML), this);
             }
         }
 
@@ -259,7 +259,6 @@ public class Spider implements Runnable, Task {
         @Override
         public void run() {
             log.info("下载IMG--Start");
-
             while (true) {
                 if (mediaRequest == null) {
                     sleep(site.getSleepTime());
@@ -274,14 +273,16 @@ public class Spider implements Runnable, Task {
                     }
                 }
             }
-
             log.info("下载IMG--End");
 
             state.compareAndSet(STATE_RUNNING, STATE_STOPPED);
         }
     }
 
-
+    /**
+     * 处理网页文件请求
+     * @param request
+     */
     private void processRequest(Request request) {
         Page page = downloader.download(request, this);
         if (page == null) {
@@ -296,15 +297,19 @@ public class Spider implements Runnable, Task {
         sleep(site.getSleepTime());
     }
 
+    /**
+     * 处理资源文件请求
+     * @param request
+     */
     private void processMediaRequest(Request request) {
         Page page = mediaDownloader.download(request, this);
-        //if (page == null) {
-        //    sleep(site.getSleepTime());
-        //    return;
-        //}
-        //for (Pipeline pipeline : pipelines) {
-        //    pipeline.process(page.getItems(), this);
-        //}
+        if (page == null) {
+            sleep(site.getSleepTime());
+            return;
+        }
+        for (Pipeline pipeline : pipelines) {
+            pipeline.process(page.getItems(), this);
+        }
         sleep(site.getSleepTime());
     }
 

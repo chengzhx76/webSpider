@@ -1,6 +1,7 @@
 package com.cheng.spider.core.downloader;
 
 import com.cheng.spider.core.*;
+import com.cheng.spider.core.util.Constant;
 import com.google.common.base.Strings;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,13 +30,14 @@ public class MediaDownloader implements Downloader {
         String directory = site.getDirectory();
         HttpClient httpClient = HttpClientPool.getInstance().getClient(site);
         HttpGet httpGet = new HttpGet(request.getUrl());
-        HttpResponse httpResponse  = null;
+        HttpResponse httpResponse;
         try {
             httpResponse  = httpClient.execute(httpGet);
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode == 200) {
                 HttpEntity entity = httpResponse.getEntity();
                 directory = getAllDirectory(directory, request);
+                String mediaName = getMediaName(request);
                 InputStream input = null;
                 FileOutputStream output = null;
                 try {
@@ -44,12 +46,22 @@ public class MediaDownloader implements Downloader {
                     if (!fileDir.exists()) {
                         fileDir.mkdirs();
                     }
-                    output = new FileOutputStream(new File(directory + getMediaName(request)));
+                    output = new FileOutputStream(new File(directory + mediaName));
                     byte[] buf = new byte[1024];
-                    int length = 0;
+                    int length;
                     while ((length = input.read(buf, 0, buf.length)) != -1) {
                         output.write(buf, 0, length);
                     }
+
+                    Page page = new Page();
+                    page.putField(Constant.ID, mediaName);
+                    Object title = request.getExtra(Constant.TITLE);
+                    if (title != null) {
+                        page.putField(Constant.TITLE, title.toString());
+                    }
+                    page.setRequest(request);
+                    return page;
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {

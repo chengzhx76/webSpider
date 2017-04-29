@@ -1,6 +1,7 @@
 package com.cheng.spider.core;
 
 import com.cheng.spider.core.selector.Selectable;
+import com.cheng.spider.core.util.Constant;
 import com.google.common.base.Strings;
 
 import java.util.ArrayList;
@@ -34,36 +35,53 @@ public class Page {
         items.putField(key, field);
     }
 
-    public void addTargetRequest(List<String> requestUrls) {
-        for (String url : requestUrls) {
-            if (checkLegalUrl(url)) {
-                break;
-            }
-            targetRequest.add(new Request(url));
-        }
-    }
-
-    public void addTargetMediaRequest(List<String> targetMediaUrls, String subdires) {
-        for (String url : targetMediaUrls) {
-            targetMediaRequest.add(new Request(url).setSubdires(subdires));
-        }
-    }
-
-    public void addTargetMediaRequest(String targetMediaUrl, String subdires) {
-        if (!Strings.isNullOrEmpty(targetMediaUrl)) {
-            targetMediaRequest.add(new Request(targetMediaUrl).setSubdires(subdires));
-        }
-    }
-
     public void addTargetMediaRequest(List<String> targetMediaUrls) {
+        addTargetMediaSubdirRequest(targetMediaUrls, null);
+    }
+
+    public void addTargetMediaSubdirRequest(List<String> targetMediaUrls, String subdires) {
+        addTargetMediaSubdirTitleRequest(targetMediaUrls, subdires, null);
+    }
+
+    public void addTargetMediaTitleRequest(List<String> targetMediaUrls, String title) {
+        addTargetMediaSubdirTitleRequest(targetMediaUrls, null, title);
+    }
+
+    public void addTargetMediaSubdirTitleRequest(List<String> targetMediaUrls, String subdires, String title) {
         for (String url : targetMediaUrls) {
-            targetMediaRequest.add(new Request(url));
+            addTargetMediaSubdirTitleRequest(url, subdires, title);
         }
     }
 
     public void addTargetMediaRequest(String targetMediaUrl) {
+        addTargetMediaSubdirRequest(targetMediaUrl, null);
+    }
+
+    public void addTargetMediaTitleRequest(String targetMediaUrl, String title) {
+        addTargetMediaSubdirTitleRequest(targetMediaUrl, null, title);
+    }
+
+    public void addTargetMediaSubdirRequest(String targetMediaUrl, String subdires) {
+        addTargetMediaSubdirTitleRequest(targetMediaUrl, subdires, null);
+    }
+
+    public void addTargetMediaSubdirTitleRequest(String targetMediaUrl, String subdires, String title) {
         if (!Strings.isNullOrEmpty(targetMediaUrl)) {
-            targetMediaRequest.add(new Request(targetMediaUrl));
+            if (!Strings.isNullOrEmpty(subdires) && !Strings.isNullOrEmpty(title)) {
+                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA).setSubdires(subdires).putExtra(Constant.TITLE, title));
+            } else if (!Strings.isNullOrEmpty(subdires)) {
+                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA).setSubdires(subdires));
+            } else if (!Strings.isNullOrEmpty(title)) {
+                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA).putExtra(Constant.TITLE, title));
+            } else {
+                targetMediaRequest.add(new Request(targetMediaUrl, Constant.MEDIA));
+            }
+        }
+    }
+
+    public void addTargetRequest(List<String> requestUrls) {
+        for (String url : requestUrls) {
+            addTargetRequest(url);
         }
     }
 
@@ -71,7 +89,7 @@ public class Page {
         if (checkLegalUrl(requestUrl)) {
             return;
         }
-        targetRequest.add(new Request(requestUrl));
+        targetRequest.add(new Request(requestUrl, Constant.HTML));
     }
 
     public Request getRequest() {

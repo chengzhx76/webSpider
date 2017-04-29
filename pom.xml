@@ -25,6 +25,9 @@
 
     <source.version>2.4</source.version>
     <compiler.version>3.1</compiler.version>
+    <dependency.version>2.1</dependency.version>
+    <jar.version>2.4</jar.version>
+    <rebel-maven-plugin.version>1.1.5</rebel-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -83,7 +86,7 @@
     </dependencies>
   </dependencyManagement>
 
-  <build>
+<!--  <build>
     <finalName>ServletMVC</finalName>
     <plugins>
       <plugin>
@@ -110,6 +113,110 @@
         </executions>
       </plugin>
     </plugins>
-  </build>
+  </build>-->
 
+  <build>
+    <resources>
+      <resource>
+        <targetPath>${project.build.directory}/classes</targetPath>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.xml</include>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${compiler.version}</version>
+          <configuration>
+            <source>1.7</source>
+            <target>1.7</target>
+            <encoding>${project.build.sourceEncoding}</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${source.version}</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${jar.version}</version>
+          <configuration>
+            <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+            <outputDirectory>${project.build.directory}</outputDirectory>
+            <archive>
+              <!--生成的jar中，不要包含pom.xml和pom.properties这两个文件 -->
+              <addMavenDescriptor>false</addMavenDescriptor>
+              <manifest>
+                <!-- 打包时MANIFEST.MF文件不记录时间版本 -->
+                <useUniqueVersions>false</useUniqueVersions>
+                <addClasspath>true</addClasspath>
+                <classpathPrefix>lib/</classpathPrefix>
+              </manifest>
+              <manifestEntries>
+                <Class-Path>.</Class-Path>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${dependency.version}</version>
+          <executions>
+            <execution>
+              <id>copy-dependencies</id>
+              <phase>package</phase>
+              <goals>
+                <goal>copy-dependencies</goal>
+              </goals>
+              <configuration>
+                <type>jar</type>
+                <includeTypes>jar</includeTypes>
+                <!--<useUniqueVersions>false</useUniqueVersions>-->
+                <outputDirectory>
+                  ${project.build.directory}/lib
+                </outputDirectory>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.zeroturnaround</groupId>
+          <artifactId>jrebel-maven-plugin</artifactId>
+          <version>${rebel-maven-plugin.version}</version>
+          <configuration>
+            <addResourcesDirToRebelXml>true</addResourcesDirToRebelXml>
+            <alwaysGenerate>true</alwaysGenerate>
+            <showGenerated>true</showGenerated>
+          </configuration>
+          <executions>
+            <execution>
+              <id>generate-rebel-xml</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
