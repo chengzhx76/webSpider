@@ -4,6 +4,8 @@ import com.cheng.spider.core.Request;
 import com.cheng.spider.core.Task;
 
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -33,15 +35,18 @@ public class PriorityScheduler implements Scheduler {
         }
     });
 
+    private Set<String> urls = new HashSet<>();
 
     @Override
     public void push(Request request, Task task) {
-        if (request.getPriority() == 0L) {
-            noPriorityQueue.add(request);
-        }else if (request.getPriority() > 0L) {
-            priorityQueuePlus.put(request);
-        }else {
-            priorityQueueMinus.put(request);
+        if (urls.add(request.getUrl())) {
+            if (request.getPriority() == 0L) {
+                noPriorityQueue.add(request);
+            }else if (request.getPriority() > 0L) {
+                priorityQueuePlus.put(request);
+            }else {
+                priorityQueueMinus.put(request);
+            }
         }
     }
 

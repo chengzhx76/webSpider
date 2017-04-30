@@ -6,9 +6,10 @@ import com.google.common.base.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Desc:
+ * Desc: Page保存了上一次抓取的结果，并可定义待抓取的链接内容。
  * Author: 光灿
  * Date: 2017/3/4
  */
@@ -59,13 +60,13 @@ public class Page {
     public void addTargetMediaSubdirTitleRequest(String targetUrl, String subdires, String title) {
         if (!Strings.isNullOrEmpty(targetUrl)) {
             if (!Strings.isNullOrEmpty(subdires) && !Strings.isNullOrEmpty(title)) {
-                targetMediaRequest.add(Request.createMediaRequest(targetUrl).setSubdires(subdires).putExtra(Constant.TITLE, title));
+                addTargetMediaRequest(Request.createMediaRequest(targetUrl).setSubdires(subdires).putExtra(Constant.TITLE, title));
             } else if (!Strings.isNullOrEmpty(subdires)) {
-                targetMediaRequest.add(Request.createMediaRequest(targetUrl).setSubdires(subdires));
+                addTargetMediaRequest(Request.createMediaRequest(targetUrl).setSubdires(subdires));
             } else if (!Strings.isNullOrEmpty(title)) {
-                targetMediaRequest.add(Request.createMediaRequest(targetUrl).putExtra(Constant.TITLE, title));
+                addTargetMediaRequest(Request.createMediaRequest(targetUrl).putExtra(Constant.TITLE, title));
             } else {
-                targetMediaRequest.add(Request.createMediaRequest(targetUrl));
+                addTargetMediaRequest(Request.createMediaRequest(targetUrl));
             }
         }
     }
@@ -76,11 +77,60 @@ public class Page {
         }
     }
 
+    public void addTargetPriorityRequest(List<String> requestUrls, long priority) {
+        for (String url : requestUrls) {
+            addTargetPriorityRequest(url, priority);
+        }
+    }
+
+    public void addTargetExtraRequest(List<String> requestUrls, Map<String, Object> extra) {
+        for (String url : requestUrls) {
+            addTargetExtrasRequest(url, extra);
+        }
+    }
+
     public void addTargetRequest(String requestUrl) {
+        addTargetExtrasRequest(requestUrl, null);
+    }
+
+    public void addTargetPriorityRequest(String requestUrl, long priority) {
+        addTargetPriorityAndExtrasRequest(requestUrl, priority, null);
+    }
+
+    public void addTargetExtrasRequest(String requestUrl, Map<String, Object> extras) {
+        addTargetPriorityAndExtrasRequest(requestUrl, 0, extras);
+    }
+
+
+    public void addTargetPriorityAndExtrasRequest(String requestUrl, long priority, Map<String, Object> extras) {
         if (checkLegalUrl(requestUrl)) {
             return;
         }
-        targetRequest.add(new Request(requestUrl, Constant.HTML));
+        if (priority != 0L && extras != null) {
+            addTargetRequest(Request.createHtmlRequest(requestUrl).setPriority(priority).setExtra(extras));
+        } else if (extras != null){
+            addTargetRequest(Request.createHtmlRequest(requestUrl).setExtra(extras));
+        } else if (priority != 0L){
+            addTargetRequest(Request.createHtmlRequest(requestUrl).setPriority(priority));
+        } else {
+            addTargetRequest(Request.createHtmlRequest(requestUrl));
+        }
+    }
+
+    /**
+     * 添加抓取的请求，可以在需要传递附加信息时使用
+     * @param request
+     */
+    public void addTargetRequest(Request request) {
+        targetRequest.add(request);
+    }
+
+    /**
+     * 添加抓取的请求，可以在需要传递附加信息时使用
+     * @param request
+     */
+    public void addTargetMediaRequest(Request request) {
+        targetMediaRequest.add(request);
     }
 
     /**
@@ -90,6 +140,10 @@ public class Page {
      */
     public void putField(String key, Object field) {
         items.putField(key, field);
+    }
+    public Page setSkip(boolean skip) {
+        items.setSkip(skip);
+        return this;
     }
 
     public Request getRequest() {

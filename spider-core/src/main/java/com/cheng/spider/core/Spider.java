@@ -143,10 +143,15 @@ public class Spider implements Runnable, Task {
      */
     public Spider thread(int threadNum) {
         checkIfNotRunning();
-        if (threadNum <= 1) {
+        if (threadNum <= 0) {
             throw new IllegalArgumentException("threadNum should be more than one!");
         }
-        executorService = Executors.newFixedThreadPool(threadNum);
+        if (threadNum == 1) {
+            return this;
+        }
+        synchronized (this) {
+            executorService = Executors.newFixedThreadPool(threadNum);
+        }
         return this;
     }
 
@@ -284,6 +289,7 @@ public class Spider implements Runnable, Task {
      * @param request
      */
     private void processRequest(Request request) {
+        //System.out.println("Priority--> " + request.getPriority());
         Page page = downloader.download(request, this);
         if (page == null) {
             sleep(site.getSleepTime());
@@ -291,9 +297,7 @@ public class Spider implements Runnable, Task {
         }
         processor.process(page);
         addRequest(page);
-        for (Pipeline pipeline : pipelines) {
-            pipeline.process(page.getItems(), this);
-        }
+        handlePipeline(page);
         sleep(site.getSleepTime());
     }
 
@@ -307,10 +311,20 @@ public class Spider implements Runnable, Task {
             sleep(site.getSleepTime());
             return;
         }
-        for (Pipeline pipeline : pipelines) {
-            pipeline.process(page.getItems(), this);
-        }
+        handlePipeline(page);
         sleep(site.getSleepTime());
+    }
+
+    /**
+     * 操作持久化
+     * @param page
+     */
+    private synchronized void handlePipeline(Page page) {
+        if (!page.getItems().isSkip()) {
+            for (Pipeline pipeline : pipelines) {
+                pipeline.process(page.getItems(), this);
+            }
+        }
     }
 
     /**

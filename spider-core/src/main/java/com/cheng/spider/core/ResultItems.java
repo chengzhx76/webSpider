@@ -38,10 +38,19 @@ public class ResultItems {
         return this;
     }
 
+    /**
+     * 是否忽略这个页面，用于pipeline来判断是否对这个页面进行处理
+     * @return 是否忽略 true 忽略
+     */
     public boolean isSkip() {
         return skip;
     }
 
+    /**
+     * 设置是否忽略这个页面，用于pipeline来判断是否对这个页面进行处理
+     * @param skip
+     * @return this
+     */
     public ResultItems setSkip(boolean skip) {
         this.skip = skip;
         return this;

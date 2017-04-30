@@ -11,6 +11,7 @@
 
   <modules>
     <module>spider-core</module>
+    <module>spider-example</module>
   </modules>
 
   <properties>
@@ -32,6 +33,13 @@
 
   <dependencyManagement>
     <dependencies>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>spider-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -85,35 +93,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-<!--  <build>
-    <finalName>ServletMVC</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler.version}</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>${source.version}</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>-->
 
   <build>
     <resources>

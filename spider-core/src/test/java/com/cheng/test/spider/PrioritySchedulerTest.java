@@ -1,6 +1,5 @@
 package com.cheng.test.spider;
 
-import com.cheng.spider.core.Request;
 import com.cheng.spider.core.Site;
 import com.cheng.spider.core.Task;
 import com.cheng.spider.core.scheduler.PriorityScheduler;
@@ -38,17 +37,17 @@ public class PrioritySchedulerTest {
         //request = new Request("c", -900L);
         //scheduler.push(request, task);
 
-        scheduler.push(new Request("a", -5L), task);
-        scheduler.push(new Request("a-1", -7L), task);
-        scheduler.push(new Request("b", 0L), task);
-        scheduler.push(new Request("c", 2L), task);
-        scheduler.push(new Request("c-1", 5L), task);
-
-        System.out.println(scheduler.poll(task).getUrl());
-        System.out.println(scheduler.poll(task).getUrl());
-        System.out.println(scheduler.poll(task).getUrl());
-        System.out.println(scheduler.poll(task).getUrl());
-        System.out.println(scheduler.poll(task).getUrl());
+        //scheduler.push(new Request("a", -5L), task);
+        //scheduler.push(new Request("a-1", -7L), task);
+        //scheduler.push(new Request("b", 0L), task);
+        //scheduler.push(new Request("c", 2L), task);
+        //scheduler.push(new Request("c-1", 5L), task);
+        //
+        //System.out.println(scheduler.poll(task).getUrl());
+        //System.out.println(scheduler.poll(task).getUrl());
+        //System.out.println(scheduler.poll(task).getUrl());
+        //System.out.println(scheduler.poll(task).getUrl());
+        //System.out.println(scheduler.poll(task).getUrl());
     }
 
 }

@@ -30,9 +30,8 @@ public class Request implements Serializable {
         this.type = type;
     }
 
-    public Request(String url, long priority) {
+    public Request(String url) {
         this.url = url;
-        this.priority = priority;
     }
 
     public static Request createTypeRequest(String url, String type) {
@@ -45,10 +44,6 @@ public class Request implements Serializable {
 
     public static Request createHtmlRequest(String url) {
         return new Request(url, Constant.HTML);
-    }
-
-    public static Request createPriorityRequest(String url, long priority) {
-        return new Request(url, priority);
     }
 
     public String getUrl() {
@@ -74,10 +69,19 @@ public class Request implements Serializable {
         return this;
     }
 
+    public Request setExtra(Map<String, Object> extra) {
+        this.extra = extra;
+        return this;
+    }
+
     public long getPriority() {
         return priority;
     }
 
+    public Request setPriority(long priority) {
+        this.priority = priority;
+        return this;
+    }
     public Request setSubdires(String subdires) {
         this.subdires = subdires;
         return this;
