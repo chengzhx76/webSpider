@@ -289,7 +289,6 @@ public class Spider implements Runnable, Task {
      * @param request
      */
     private void processRequest(Request request) {
-        //System.out.println("Priority--> " + request.getPriority());
         Page page = downloader.download(request, this);
         if (page == null) {
             sleep(site.getSleepTime());
