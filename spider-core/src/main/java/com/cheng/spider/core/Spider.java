@@ -181,7 +181,8 @@ public class Spider implements Runnable, Task {
 
         if (startUrls != null) {
             for (String startUrl : startUrls) {
-                scheduler.push(new Request(startUrl, Constant.HTML), this);
+//                scheduler.push(new Request(startUrl, Constant.HTML), this);
+                scheduler.push(new Request(startUrl, Constant.JSON), this); // 极客时间
             }
         }
 
@@ -191,7 +192,8 @@ public class Spider implements Runnable, Task {
 
         // 网页内容下载
         Request request = scheduler.poll(this);
-        new Thread(new DownloadContent(request, this), "HTMLDownload").start();
+
+        new Thread(new DownloadContent(request, this), request.getType() + "Download").start();
 
         // 图片下载
         if (isDownloadMedia()) {
@@ -211,7 +213,7 @@ public class Spider implements Runnable, Task {
 
         @Override
         public void run() {
-            log.info("下载HTML--Start");
+            log.info("下载"+request.getType()+"--Start");
             if (!htmlState.compareAndSet(STATE_INIT, STATE_RUNNING)) {
                 throw new IllegalStateException("htmlDownload is already running!");
             }
@@ -248,7 +250,7 @@ public class Spider implements Runnable, Task {
                 executorService.shutdown();
             }
             htmlState.compareAndSet(STATE_RUNNING, STATE_STOPPED);
-            log.info("下载HTML--End");
+            log.info("下载"+request.getType()+"--End");
         }
     }
 

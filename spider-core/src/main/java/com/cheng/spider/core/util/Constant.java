@@ -13,6 +13,8 @@ public interface Constant {
 
     String MEDIA = "media";
 
+    String JSON = "JSON";
+
     String ID = "id";
 
     String TITLE = "title";

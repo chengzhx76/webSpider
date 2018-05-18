@@ -6,6 +6,7 @@ import com.cheng.spider.core.Site;
 import com.cheng.spider.core.Task;
 import com.cheng.spider.core.selector.Html;
 import com.cheng.spider.core.selector.PlainText;
+import com.cheng.spider.core.util.Constant;
 import com.cheng.spider.core.util.UrlUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -61,7 +62,11 @@ public class HttpClientDownloader implements Downloader {
                 String content = IOUtils.toString(httpResponse.getEntity().getContent(), charset);
 
                 Page page = new Page();
-                page.setHtml(new Html(UrlUtils.fixAllRelativeHrefs(content, request.getUrl())));
+                if (Constant.HTML.equals(request.getType())) {
+                    page.setHtml(new Html(UrlUtils.fixAllRelativeHrefs(content, request.getUrl())));
+                } else if (Constant.JSON.equals(request.getType())){
+                    page.setHtml(new PlainText(content));
+                }
                 page.setUrl(new PlainText(request.getUrl()));
                 page.setRequest(request);
                 return page;
